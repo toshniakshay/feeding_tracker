@@ -1,0 +1,7 @@
+
+pageTitles:
+  homePage: Baby Feeding History
+  addFeedingPage: Add Feeding
+
+homePage:
+  emptyFeedings: No Feedings added yet. '+' to add one
