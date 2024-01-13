@@ -5,17 +5,22 @@ import 'package:potty_feeding_tracker/data/model/feeding_data_model.dart';
 
 @lazySingleton
 class FeedingLocalDataSource {
-  const FeedingLocalDataSource();
+  late Box<dynamic> feedBox;
 
-  Future<List<FeedingDataModel>> getAllFeedings() async {
-    return <FeedingDataModel>[];
+  Future<void> setUp() async {
+    feedBox = await Hive.openBox<dynamic>('feed');
   }
 
-  void addFeeding(FeedingDataModel model) {
-    final feedingBox = Hive.box<Feeding>('feed');
-    feedingBox.add(model.feedings[0]);
+  Future<List<FeedingDataModel>> getAllFeedings() async {
+    return feedBox.values
+        .map(
+          (e) => FeedingDataModel(
+              feedings: e.feedings as List<Feeding>, date: e.date as DateTime),
+        )
+        .toList();
+  }
 
-    final box = Hive.box<FeedingDataModel>('feeding');
-    box.add(model);
+  void addFeeding(FeedingDataModel model) async {
+    feedBox.add(model);
   }
 }

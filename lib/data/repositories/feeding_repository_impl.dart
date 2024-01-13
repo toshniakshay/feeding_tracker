@@ -1,8 +1,11 @@
-import 'package:flutter/src/material/time.dart';
+import 'dart:developer';
+
+import 'package:flutter/material.dart' show TimeOfDay;
 import 'package:injectable/injectable.dart';
 import 'package:potty_feeding_tracker/data/db/local/feeding_local_datasource.dart';
 import 'package:potty_feeding_tracker/data/model/feeding.dart';
 import 'package:potty_feeding_tracker/data/model/feeding_data_model.dart';
+import 'package:potty_feeding_tracker/domain/entities/feeding_details_entity.dart';
 import 'package:potty_feeding_tracker/domain/entities/feeding_entity.dart';
 import 'package:potty_feeding_tracker/domain/repositories/feeding_repository.dart';
 
@@ -13,15 +16,24 @@ class FeedingRepositoryImpl extends FeedingRepository {
   final FeedingLocalDataSource _localDataSource;
   @override
   Future<List<FeedingEntity>> getFeedingData() async {
-    // const mockData = [
-    //   FeedingEntity(date: '25 Dec 2023', time: '6 AM', duration: 40),
-    //   FeedingEntity(date: '25 Dec 2023', time: '8 AM', duration: 40),
-    //   FeedingEntity(date: '25 Dec 2023', time: '10 AM', duration: 40),
-    //   FeedingEntity(date: '25 Dec 2023', time: '12 PM', duration: 40),
-    //   FeedingEntity(date: '25 Dec 2023', time: '2 PM', duration: 40),
-    // ];
+    List<FeedingEntity> feedings = [];
 
-    return [];
+    List<FeedingDataModel> feedingModels =
+        await _localDataSource.getAllFeedings();
+    for (FeedingDataModel model in feedingModels) {
+      feedings.add(FeedingEntity(
+        date: model.date,
+        feedings: model.feedings
+            .map(
+              (e) => FeedingDetailsEntity(
+                startTime: TimeOfDay.fromDateTime(e.startTime),
+                endTime: TimeOfDay.fromDateTime(e.endTime),
+              ),
+            )
+            .toList(),
+      ));
+    }
+    return feedings;
   }
 
   @override
@@ -33,12 +45,19 @@ class FeedingRepositoryImpl extends FeedingRepository {
     try {
       _localDataSource.addFeeding(
         FeedingDataModel(
-          feedings: [Feeding(startTime: startTime, endTime: endTime)],
+          feedings: [
+            Feeding(
+              startTime: DateTime(feedingDate.year, feedingDate.month,
+                  feedingDate.day, startTime.hour, startTime.minute),
+              endTime: DateTime(feedingDate.year, feedingDate.month,
+                  feedingDate.day, endTime.hour, endTime.minute),
+            ),
+          ],
           date: feedingDate,
         ),
       );
     } catch (e) {
-      print(e);
+      log(e.toString());
     }
     return true;
   }

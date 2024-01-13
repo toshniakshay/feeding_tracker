@@ -24,7 +24,7 @@ class AddFeedingBloc extends Bloc<AddFeedingEvent, AddFeedingState> {
           emit(state.copyWith(startTime: e.value));
           emit(state.copyWith(canSaveFeed: _canSaveFeed()));
         },
-        feedAdded: (_) => _router.push(const HomeRoute()),
+        feedAdded: (_) => emit(state.copyWith(uiState: const UIState.loaded())),
         updateDate: (e) {
           emit(state.copyWith(pickedDate: e.value));
           emit(state.copyWith(canSaveFeed: _canSaveFeed()));
@@ -47,8 +47,8 @@ class AddFeedingBloc extends Bloc<AddFeedingEvent, AddFeedingState> {
   final AppRouter _router;
 
   Future<void> _onFeedAdded(Emitter<AddFeedingState> emit) async {
-    emit(const AddFeedingState(uiState: UIState.loading()));
-    final saved = await _addFeeding(
+    emit(state.copyWith(uiState: const UIState.loading()));
+    final saved = _addFeeding(
       feedingDate: state.pickedDate!,
       startTime: state.startTime!,
       endTime: state.endTime!,

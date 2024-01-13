@@ -13,33 +13,39 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          context.appTranslations.pageTitles.homePage,
-        ),
-        centerTitle: true,
-        elevation: 2,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.router.push(const AddFeedingRoute());
+    return BlocProvider<HomeBloc>(
+      create: (_) =>
+          diContainer<HomeBloc>()..add(const HomeEvent.fetchHomeData()),
+      child: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                context.appTranslations.pageTitles.homePage,
+              ),
+              centerTitle: true,
+              elevation: 2,
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                context.router.push(const AddFeedingRoute()).then(
+                      (_) => BlocProvider.of<HomeBloc>(context)
+                          .add(const HomeEvent.fetchHomeData()),
+                    );
+              },
+              child: const Icon(Icons.add),
+            ),
+            body: state.maybeMap(
+              initial: (_) => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              loaded: (s) => FeedingList(
+                feedingData: s.feedings,
+              ),
+              orElse: () => const SizedBox.shrink(),
+            ),
+          );
         },
-        child: const Icon(Icons.add),
-      ),
-      body: BlocProvider<HomeBloc>(
-        create: (_) => diContainer<HomeBloc>(),
-        child: BlocBuilder<HomeBloc, HomeState>(
-          builder: (context, state) => state.maybeMap(
-            initial: (_) => const Center(
-              child: CircularProgressIndicator(),
-            ),
-            loaded: (s) => FeedingList(
-              feedingData: s.feedings,
-            ),
-            orElse: () => Container(),
-          ),
-        ),
       ),
     );
   }
@@ -83,8 +89,8 @@ class FeedingItem extends StatelessWidget {
         child: Column(
           children: [
             Text(feedingData.date.toString()),
-            Text(feedingData.date.toString()),
-            Text(feedingData.date.toString()),
+            Text(feedingData.feedings.first.startTime.toString()),
+            Text(feedingData.feedings.first.endTime.toString()),
           ],
         ),
       );
