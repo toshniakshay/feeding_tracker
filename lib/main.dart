@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:potty_feeding_tracker/common/routes/app_router.dart';
+import 'package:potty_feeding_tracker/data/db/local/feeding_local_datasource.dart';
 import 'package:potty_feeding_tracker/data/model/feeding.dart';
 import 'package:potty_feeding_tracker/di/di_injector.dart';
 
@@ -15,13 +15,14 @@ void main() async {
   configureDependencies();
   Directory directory = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(directory.path);
-  Hive.registerAdapter(FeedingDataModelAdapter());
-  Hive.registerAdapter(FeedingAdapter());
-  runApp(MyApp());
+  Hive.registerAdapter<FeedingDataModel>(FeedingDataModelAdapter());
+  Hive.registerAdapter<Feeding>(FeedingAdapter());
+  await diContainer<FeedingLocalDataSource>().setUp();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

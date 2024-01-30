@@ -39,7 +39,7 @@ _i1.GetIt init(
   );
   gh.lazySingleton<_i3.AppRouter>(() => _i3.AppRouter());
   gh.lazySingleton<_i4.FeedingLocalDataSource>(
-      () => const _i4.FeedingLocalDataSource());
+      () => _i4.FeedingLocalDataSource());
   gh.factory<_i5.FeedingRepository>(
       () => _i6.FeedingRepositoryImpl(gh<_i4.FeedingLocalDataSource>()));
   gh.factory<_i7.GetFeedingDataUseCase>(

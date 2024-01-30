@@ -36,7 +36,14 @@ class _AddFeedingPageState extends State<AddFeedingPage> {
           ),
         ),
         body: BlocConsumer<AddFeedingBloc, AddFeedingState>(
-          listener: (context, state) {},
+          listener: (context, state) {
+            state.uiState.maybeWhen(
+              orElse: () {},
+              loaded: () {
+                context.router.pop();
+              },
+            );
+          },
           builder: (context, state) {
             return BlocBuilder<AddFeedingBloc, AddFeedingState>(
               builder: (_, state) => state.uiState.maybeMap(
@@ -60,6 +67,7 @@ class _AddFeedingPageState extends State<AddFeedingPage> {
                                       context: context,
                                       firstDate: DateTime(2022),
                                       lastDate: DateTime(2050),
+                                      initialDate: DateTime(2024),
                                     );
                                     if (pickedDate != null) {
                                       return _bloc.add(
@@ -174,7 +182,7 @@ class _AddFeedingPageState extends State<AddFeedingPage> {
                         ),
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                   ],
                 )),
               ),

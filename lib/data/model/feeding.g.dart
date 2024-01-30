@@ -17,8 +17,8 @@ class FeedingAdapter extends TypeAdapter<Feeding> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Feeding(
-      startTime: fields[0] as TimeOfDay,
-      endTime: fields[1] as TimeOfDay,
+      startTime: fields[0] as DateTime,
+      endTime: fields[1] as DateTime,
     );
   }
 
